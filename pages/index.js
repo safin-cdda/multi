@@ -1,12 +1,31 @@
-export default function Home({ ip }) {
+export default function Home(props) {
+    const ip = props.ip;
     return (
-        <>
-            <h1>{ip}</h1>
-        </>
+        <div style={{ padding: 30 }}>
+            <h1>
+                <span style={{ color: "aliceblue" }}>{ip}</span>
+            </h1>
+        </div>
     );
 }
 
-Home.getInitialProps = async ({ req }) => {
-    const ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
-    return { ip };
-};
+export async function getServerSideProps(context) {
+    let ip;
+
+    const { req } = context;
+
+    if (req.headers["x-forwarded-for"]) {
+        ip = req.headers["x-forwarded-for"].split(",")[0];
+    } else if (req.headers["x-real-ip"]) {
+        ip = req.connection.remoteAddress;
+    } else {
+        ip = req.connection.remoteAddress;
+    }
+
+    console.log(ip);
+    return {
+        props: {
+            ip,
+        },
+    };
+}
