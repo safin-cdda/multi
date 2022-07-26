@@ -6,13 +6,7 @@ export default function Home({ ip }) {
     );
 }
 
-export const getServerSideProps = ({ req }) => {
-    console.log(req.headers);
-    const forwarded = req.headers["x-forwarded-for"];
-    const ip = forwarded ? forwarded.split(/, /)[0] : req.connection.remoteAddress;
-    return {
-        props: {
-            ip,
-        },
-    };
+Home.getInitialProps = async ({ req }) => {
+    const ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
+    return { ip };
 };
